@@ -51,6 +51,7 @@ const spng_ctx = c.spng_ctx;
 
 fn checkResult(res: c_int) !void {
     if (res != 0) {
+        std.debug.print("string: {s}\n", .{std.mem.span(c.spng_strerror(res))});
         return error.InvalidResult;
     }
 }
@@ -81,6 +82,14 @@ pub const SpngContext = struct {
 
     pub fn setFile(self: @This(), path: []const u8) !void {
         var file = c.fopen(path.ptr, "r");
+        if (file == null) {
+            return error.FileNotOpen;
+        }
+        _ = c.fseek(file, 0, c.SEEK_END);
+        var sz = c.ftell(file);
+        std.debug.print("file size: {s} {d}\n", .{ path, sz });
+        c.rewind(file);
+
         try self.setFileRaw(file);
     }
 
