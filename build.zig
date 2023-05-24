@@ -1,14 +1,14 @@
 const std = @import("std");
 
-pub fn linkSpng(b: *std.Build, exe: *std.build.CompileStep) void {
+pub fn addLib(b: *std.Build, exe: *std.build.CompileStep, comptime pathPrefix: []const u8) void {
     var cflags = std.ArrayList([]const u8).init(b.allocator);
     cflags.append("-DSPNG_USE_MINIZ=1") catch unreachable;
     defer cflags.deinit();
 
-    exe.addIncludePath("libspng/spng");
-    exe.addIncludePath("./");
-    exe.addCSourceFile("libspng/spng/spng.c", cflags.items);
-    exe.addCSourceFile("miniz.c", cflags.items);
+    exe.addIncludePath(pathPrefix ++ "/libspng/spng");
+    exe.addIncludePath(pathPrefix ++ "/");
+    exe.addCSourceFile(pathPrefix ++ "/libspng/spng/spng.c", cflags.items);
+    exe.addCSourceFile(pathPrefix ++ "/miniz.c", cflags.items);
 }
 
 // Although this function looks imperative, note that its job is to
@@ -40,7 +40,7 @@ pub fn build(b: *std.Build) void {
     // step when running `zig build`).
     exe.install();
     exe.linkLibCpp();
-    linkSpng(b, exe);
+    addLib(b, exe, "./");
 
     // This *creates* a RunStep in the build graph, to be executed when another
     // step is evaluated that depends on it. The next line below will establish
