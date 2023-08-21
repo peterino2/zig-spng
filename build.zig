@@ -5,10 +5,10 @@ pub fn addLib(b: *std.Build, exe: *std.build.CompileStep, comptime pathPrefix: [
     cflags.append("-DSPNG_USE_MINIZ=1") catch unreachable;
     defer cflags.deinit();
 
-    exe.addIncludePath(pathPrefix ++ "/libspng/spng");
-    exe.addIncludePath(pathPrefix ++ "/");
-    exe.addCSourceFile(pathPrefix ++ "/libspng/spng/spng.c", cflags.items);
-    exe.addCSourceFile(pathPrefix ++ "/miniz.c", cflags.items);
+    exe.addIncludePath(.{ .path = pathPrefix ++ "/libspng/spng" });
+    exe.addIncludePath(.{ .path = pathPrefix ++ "/" });
+    exe.addCSourceFile(.{ .file = .{ .path = pathPrefix ++ "/libspng/spng/spng.c" }, .flags = cflags.items });
+    exe.addCSourceFile(.{ .file = .{ .path = pathPrefix ++ "/miniz.c" }, .flags = cflags.items });
 }
 
 // Although this function looks imperative, note that its job is to
